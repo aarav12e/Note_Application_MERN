@@ -4,6 +4,7 @@
 
 [![Demo App](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge)](https://note-application-mern.onrender.com/)
 
+
 Highlights:
 
 - 🧱 Full-Stack App Built with the MERN Stack (MongoDB, Express, React, Node)

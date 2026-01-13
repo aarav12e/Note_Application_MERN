@@ -1,6 +1,8 @@
 <h1 align="center">📝 MERN Stack Note Taking App ✨</h1>
 
-![Demo App](/frontend/public/screenshot-for-readme.png)
+## 🚀 Live Demo
+
+[![Demo App](https://img.shields.io/badge/Live-Demo-brightgreen?style=for-the-badge)](https://note-application-mern.onrender.com/)
 
 Highlights:
 

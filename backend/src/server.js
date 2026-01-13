@@ -1,54 +1,47 @@
 import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import path from "path";
+
 import notesRoutes from "./routes/notesRoutes.js";
 import { connectDB } from "./config/db.js";
-import dotenv from "dotenv";
-import ratelimit from "./config/upstash.js";
+import rateLimiter from "./middleware/rateLimiter.js";
 
 dotenv.config();
 
-// Connect to DB
-
-
-console.log("Mongo URI:", process.env.MONGO_URI);
-
 const app = express();
 const PORT = process.env.PORT || 5001;
+const __dirname = path.resolve();
 
-// Middleware to parse JSON
-app.use(express.json());
+// middleware
+if (process.env.NODE_ENV !== "production") {
+  app.use(
+    cors({
+      origin: "http://localhost:5173",
+    })
+  );
+}
+app.use(express.json()); // this middleware will parse JSON bodies: req.body
+app.use(rateLimiter);
 
-// ✅ Custom middleware for rate limiting
-app.use(async (req, res, next) => {
-  try {
-    const identifier = req.ip; // you can also use req.headers['x-forwarded-for'] for proxies
-    const { success } = await ratelimit.limit(identifier);
+// our simple custom middleware
+// app.use((req, res, next) => {
+//   console.log(`Req method is ${req.method} & Req URL is ${req.url}`);
+//   next();
+// });
 
-    if (!success) {
-      return res.status(429).json({
-        message: "Too many requests, please try again later.",
-      });
-    }
-
-    next();
-  } catch (err) {
-    console.error("Rate limiter error:", err);
-    next(); // fallback - allow request if rate limiter fails
-  }
-});
-
-// Debug middleware - logs every request
-app.use((req, res, next) => {
-  console.log("We just got a new request!!", req.method, req.url);
-  next();
-});
-
-// API routes
 app.use("/api/notes", notesRoutes);
 
-// Start server
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static(path.join(__dirname, "../frontend/dist")));
+
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
+  });
+}
+
 connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log(`✅ Server is running on PORT: ${PORT}`);
-});
-
+    console.log("Server started on PORT:", PORT);
+  });
 });

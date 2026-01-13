@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
-// 1 - create a schema
-// 2 - create a model based on that schema
+// 1st step: You need to create a schema
+// 2nd step: You would create a model based off of that schema
 
 const noteSchema = new mongoose.Schema(
   {
@@ -18,4 +18,5 @@ const noteSchema = new mongoose.Schema(
 );
 
 const Note = mongoose.model("Note", noteSchema);
+
 export default Note;
